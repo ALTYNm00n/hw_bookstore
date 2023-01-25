@@ -1,20 +1,21 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+
 class BookCategory(models.Model):
     name = models.CharField(max_length=120,verbose_name='категории')
     image = models.ImageField(upload_to='image/')
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name
     class Meta:
-        verbose_name= 'Категория'
+        verbose_name = 'Категория'
         verbose_name_plural = 'категории' 
 
 class Author(AbstractUser):
     book_amount=models.PositiveBigIntegerField(default=0,null=True,verbose_name='количество книг')
-    date_birthday =models.DateField(verbose_name='дата рождения')
-    pseudonym = models.CharField(max_length=127,verbose_name='псевдоним')
+    date_birthday =models.DateField(verbose_name='дата рождения',null=True)
+    pseudonym = models.CharField(max_length=127,verbose_name='псевдоним',null=True)
     avatar = models.ImageField(upload_to='avatar/',null=True)
-    book_category=models.ForeignKey(to=BookCategory,on_delete=models.CASCADE,related_name='authors',verbose_name='категория книг')
+    book_category=models.ForeignKey(to=BookCategory,on_delete=models.CASCADE,related_name='authors',verbose_name='категория книг',null=True)
     def __str__(self) -> str:
         return self.username
     class Meta :
@@ -36,14 +37,6 @@ class Book(models.Model):
         verbose_name='книга'
         verbose_name_plural= 'книги'
     
-
-
-
-
-
-
-
-
 
 
 

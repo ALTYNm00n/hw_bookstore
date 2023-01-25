@@ -12,21 +12,33 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 
+import os
+
+import environ
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+environ.Env.read_env(os.path.join(BASE_DIR,'.env'))
+
+env = environ.Env()
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-58)$wj3jxmkbz1!r%jo4u%9bco_huun0v3)jho(10)!8o6yp_8'
-
+SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = []
 
+{
+"username": "altynai",
+"password": "qwertyuiop",
+"email": "izialtyn@gmail.com"
+}
 
 # Application definition
 
@@ -107,11 +119,24 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
+CORS_ORIGIN_WHITELIST =[
+    'http://127.0.01:3000',
+    'http://localhost:3000',
+    'http://127.0.01:3001',
+    'http://localhost:3001',
+]
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        "rest_framework.authentication.SessionAuthentication",
+    ]
+}
+
+LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'UTC'
 
