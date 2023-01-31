@@ -1,0 +1,84 @@
+version: "3"
+
+services:
+
+  db:
+    container_name: postgres_test
+    image: postgres:12.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - my_network
+    env_file:
+      - ./.env
+
+
+  web:
+    container_name: test_project
+    restart: unless-stopped
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./media/:/media
+      - ./static/:/static
+      - ./:/app
+    entrypoint: ./wsgi-entrypoint.sh
+    networks:
+      - my_network
+    depends_on:
+      - db
+
+  redis:
+    restart: always
+    container_name: test_redis
+    image: redis:alpine
+    networks:
+      - my_network
+
+  celery:
+    image: celery
+    container_name: test_celery
+    command: celery -A core worker -l info
+    build:
+      context: .
+    volumes:
+      - ./:/app
+    depends_on:
+      - redis
+      - web
+      - db
+    networks:
+      - my_network
+    restart: always
+
+  nginx:
+    container_name: test_nginx
+    build:
+      context: ./docker/nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./media/:/media
+      - ./static/:/static
+    depends_on:
+      - db
+      - web
+    networks:
+      - my_network
+
+
+
+
+
+volumes:
+  media:
+  static:
+  postgres_data:
+
+
+networks:
+  my_network:
